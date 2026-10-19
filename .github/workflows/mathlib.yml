@@ -1,0 +1,73 @@
+# Publishes Mathlib, ready to use, as downloads on a release of this repo.
+#
+# Mathlib's prebuilt files come from cache.mathlib.org, which Claude's cloud
+# sandboxes can't reach, and building Mathlib from source there takes hours.
+# GitHub's own machines can reach that server, so this workflow fetches the
+# prebuilt files here, packs a small project that depends only on Mathlib
+# (its sources, its dependencies and all their built files), and attaches the
+# pack to the release named in TAG, split into parts under GitHub's 2 GB limit.
+# A sandbox then needs only GitHub to download and unpack it.
+name: Publish Mathlib
+on:
+  workflow_dispatch:
+  push:
+    paths: [".github/workflows/mathlib.yml"]
+permissions:
+  contents: write
+env:
+  MATHLIB_REV: v4.35.0          # a Mathlib release tag; its Lean version matches
+  TAG: mathlib-v4.35.0          # the release of this repo that carries the pack
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Free disk space
+        run: |
+          sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /opt/hostedtoolcache/CodeQL
+          df -h /
+      - name: Install elan
+        run: |
+          curl -fsSL https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh \
+            | sh -s -- -y --default-toolchain none
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+      - name: Make a project that depends only on Mathlib
+        run: |
+          mkdir -p ~/mathlib-project && cd ~/mathlib-project
+          curl -fsSL -o lean-toolchain \
+            "https://raw.githubusercontent.com/leanprover-community/mathlib4/$MATHLIB_REV/lean-toolchain"
+          cat > lakefile.toml <<EOF
+          name = "mathlib_project"
+
+          [[require]]
+          name = "mathlib"
+          git = "https://github.com/leanprover-community/mathlib4"
+          rev = "$MATHLIB_REV"
+          EOF
+          cat lean-toolchain lakefile.toml
+          lake update
+      - name: Fetch Mathlib's prebuilt files
+        run: cd ~/mathlib-project && lake exe cache get
+      - name: Check that Mathlib loads
+        run: |
+          cd ~/mathlib-project
+          printf 'import Mathlib\nexample : (2 : ℝ) + 2 = 4 := by norm_num\n#check Real.sqrt\n' > Check.lean
+          lake env lean Check.lean
+          rm Check.lean
+      - name: Pack
+        run: |
+          cd ~ && mkdir -p pack
+          tar -cf - mathlib-project | zstd -T0 -10 | split -b 1900m -d - "pack/$TAG.tar.zst.part-"
+          (cd pack && sha256sum * > "$TAG.sha256")
+          ls -l pack && du -sh mathlib-project
+      - name: Publish
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          cd ~/pack
+          notes="Mathlib $MATHLIB_REV with all its built files, packed by .github/workflows/mathlib.yml. Download every part, then: cat $TAG.tar.zst.part-* | zstd -d | tar -x"
+          if gh release view "$TAG" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            gh release upload "$TAG" * --clobber --repo "$GITHUB_REPOSITORY"
+          else
+            gh release create "$TAG" * --title "Mathlib $MATHLIB_REV, prebuilt" \
+              --notes "$notes" --repo "$GITHUB_REPOSITORY"
+          fi
