@@ -9,7 +9,7 @@ checker refuses any rule that leaves a case undefined and any proof with a gap.
 | Path | What it is |
 | --- | --- |
 | `The Model, v0.1.md` | The Model in plain words, matching the Lean below rule for rule. |
-| `Subcompass/OSM.lean` | OSM, our standard model: The Model, with every gap filled and tagged. Start with its opening comment. |
+| `Subcompass/OSM.lean` | OSM ("our standard model", not physics' Standard Model): the same model, stated exactly in Lean, with each rule tagged by where it comes from. Start with its opening comment. |
 | `Subcompass.lean` | Imports every model, so one command checks them all. |
 | `lean-toolchain` | The exact Lean version: 4.35.0. |
 | `scripts/setup-lean.sh` | Gets that Lean and checks every model. |
@@ -42,6 +42,6 @@ only Lean's standard rules of logic (`propext`, `Quot.sound`,
 2. Add `import Subcompass.YourModel` to `Subcompass.lean`.
 3. Run `lake build`, and commit only when it passes with no errors.
 
-To run shared tests against your model, fill the `ArithModel` template in
-section 8 of `Subcompass/OSM.lean` (add `import Subcompass.OSM` at the top of
-your file).
+To run the same tests against several models, give yours the common shape
+`ArithModel` from section 8 of `Subcompass/OSM.lean` (add
+`import Subcompass.OSM` at the top of your file).

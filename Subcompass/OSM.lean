@@ -1,7 +1,8 @@
 /-!
-# OSM, our standard model, written out in Lean
+# OSM, written out in Lean
 
-Team 3, Generation 0 (3:0), for the Grader.
+OSM ("our standard model", not physics' Standard Model) is the model described
+in plain words in `The Model, v0.1.md`. This file states it exactly.
 Checked with Lean 4.35.0 (`lake build` passes with no errors or warnings),
 core library only (no Mathlib is needed). To check it yourself, see README.md.
 
@@ -12,18 +13,19 @@ definition that does not give an answer for every possible input, and any
 proof that is not airtight. Text between `/-` and `-/`, and lines starting
 with `--`, are plain English for people; everything else is for the checker.
 
-Every rule below carries a tag:
+Every rule below carries a tag saying where it comes from:
 
-* **[Model]**: stated in The Model file.
-* **[Reading]**: what a sentence of The Model forces once it is written exactly.
-* **[Gap k]**: something The Model leaves open, filled by Team 3's choice,
-  numbered as in the list below. These are proposals: not approved, and not
-  in The Model.
+* **[Model]**: stated in The Model's original text, which `The Model, v0.1.md`
+  keeps word for word up to "a thing in n dimensions is made of n + 1 points",
+  apart from one added sentence on points being individuals (a [Reading]).
+* **[Reading]**: what a sentence of that text forces once it is written exactly.
+* **[Gap k]**: something that text leaves open, filled here, numbered as in the
+  list below. `The Model, v0.1.md` states each fill in plain words.
 
 Nothing untagged decides anything; untagged code only reports (readouts) or
 checks (theorems and examples).
 
-## What The Model says (the starting point)
+## What The Model's original text says (the starting point)
 
 Points have one of two values, ⊕ = +1 and ⊖ = −1. The origin starts as a
 loose bag of points, nothing bound. × binds points and carries a thing into
@@ -32,7 +34,7 @@ counts, even for like points. In 1D the value is [+] or [−], as in The
 Model's table. + joins things within a dimension. The anti-matter twin flips
 every ⊕ and ⊖. Geometry is Euclidean, and every object has a container.
 
-## The gaps and Team 3's fills
+## The gaps and how they are filled
 
 1. **× past 1D.** × binds a thing to one more point from the bag, which goes
    last in its order. A bag point counts as a 0D thing, so this is also how a
@@ -61,22 +63,24 @@ every ⊕ and ⊖. Geometry is Euclidean, and every object has a container.
 6. **Addition.** + brings points of different things in one container to one
    place, any number of pairs at once (laying one thing on another). The
    place keeps every point, with no order among them; the sum is only its
-   flattened total. Why: the Handoff's addition candidate.
+   flattened total. Why: this is the reading of "joins" that, like ×, keeps
+   every point; nothing is lost or merged.
 7. **Undoing.** Right after any × or +, every bound point at a place holding
    both a ⊕ and a ⊖ comes unbound, all at once, and goes back to the bag; its
    thing drops one dimension per point lost, and a thing left with one point
-   dissolves into the bag. Like points (⊕ + ⊕) stay joined. Why: the
-   Handoff's annihilation candidate ("multiplication undone"); freed points
-   go to the bag because unbound points are 0D, and 0D points live at the
-   origin, so a (⊕ + ⊖) pair does not fly off as a separate object.
+   dissolves into the bag. Like points (⊕ + ⊕) stay joined. Why: it makes a
+   thing laid on its anti-matter twin annihilate, × undone back to loose
+   points, a drop in dimension. Freed points go to the bag because unbound
+   points are 0D, and 0D points live at the origin, so a (⊕ + ⊖) pair does
+   not fly off as a separate object.
 8. **Dynamics.** The only events are × and +, in whatever order a setup
    chooses, each followed at once by 7. Nothing happens by itself, and there
    is no clock, only the order of events. An event can happen exactly when its
    result is a world The Model allows. Why: × and + are the only operations
-   The Model names, and the Handoff's decision that "the geometry itself must
-   decide when contact triggers collapse".
+   The Model names, and the model has no other quantity, such as energy, that
+   could decide when an event happens, so only the shape of its result can.
 
-Gaps the Lean work exposed, which the first list of eight missed:
+Three more gaps, found while writing the rules out exactly:
 
 9. **One thing per point.** A point is in at most one thing, so × takes only
    bag points; things share a corner by bringing two points together (6),
@@ -84,7 +88,7 @@ Gaps the Lean work exposed, which the first list of eight missed:
    holds two points.
 10. **Joins hold (no subtraction).** Nothing pulls joined points apart except
     7, or a thing leaving its container (11). Why: The Model names no
-    un-joining, and the Handoff has like points join.
+    un-joining.
 11. **Changing container.** A thing that changes container, by × or by losing
     a point, arrives in the new one touching nothing. Why: a place lies in one
     container (5).
@@ -346,12 +350,13 @@ together there, for example a (⊕ + ⊖) pair. -/
 def World.released (w : World) (e : Event) : List (List Sign) :=
   ((w.shape.raw e).places.filter (mixed (opp w.signs))).map w.signsOf
 
-/-! ## 8. The template every team's model fills
+/-! ## 8. A common shape for models
 
 A model is: its kind of world, its kind of event, how a world starts from a
 loose bag of points, what one event does (`none` = can't happen), and what a
-test may look at. OSM is one filling; every rival model is another, so a test that
-looks at the bag and the things can be written once for every model. -/
+test may look at. OSM is one filling; any other model in this repo can be
+another, so a test that looks at the bag and the things can be written once
+for every model. -/
 
 structure ArithModel where
   World : Type
