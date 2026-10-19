@@ -11,6 +11,10 @@ name: Publish Mathlib
 on:
   workflow_dispatch:
   push:
+    # Only when this file changes on main. Naming the branch also keeps tag
+    # pushes out: GitHub ignores `paths` for tags, so without it every tag a
+    # team pushes would rebuild and re-upload the pack.
+    branches: [main]
     paths: [".github/workflows/mathlib.yml"]
 permissions:
   contents: write
