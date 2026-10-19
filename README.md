@@ -37,6 +37,14 @@ Mathlib with all its built files (about 1.9 GB, 7.3 GB unpacked, kept in
 That takes a few minutes; after that a run takes seconds, and Mathlib is never
 rebuilt. To re-check later, run `lake build` with `~/.elan/bin` on your `PATH`.
 
+**Every new copy of the repo needs this once, including a git worktree.** The
+script links the copy to the shared Mathlib; without that link, `lake build`
+quietly starts downloading all of Mathlib and would then rebuild it for hours.
+So in a new worktree or clone, run `scripts/setup-lean.sh` there before
+building (it takes seconds once Mathlib is on the machine), and remove the
+worktree (`git worktree remove <folder>`) before your session ends, or it will
+keep your branch checked out and block the next session from using it.
+
 On a Mac or Windows machine, install [elan](https://github.com/leanprover/elan)
 and run `lake exe cache get` and then `lake build` in the repo folder; elan
 reads `lean-toolchain` and fetches the right Lean itself, and `cache get`
