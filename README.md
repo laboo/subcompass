@@ -14,6 +14,8 @@ game; the rules are in [The Grader's File](The%20Grader's%20File.md).
 | `generations/` | The contest's history, one file per generation. |
 | `history/` | An archive from before the contest. |
 | `Subcompass.lean`, `lakefile.toml`, `lake-manifest.json`, `lean-toolchain` | The shared Lean setup (Lean 4.35.0 and Mathlib v4.35.0), where the test suite will live. |
+| `Rishon.md`, `Subcompass/Rishon.lean` | Team 0's model (branch `team-0`): OSM plus pairs from the vacuum, read as Harari's rishons. |
+| `Subcompass/OSM.lean` | The baseline model, copied unchanged from branch `baseline`, which Rishon builds on. |
 | `scripts/setup-lean.sh` | Installs that Lean and Mathlib on Linux and builds the project. |
 | `.github/workflows/check.yml` | GitHub builds the project on every push. |
 | `.github/workflows/mathlib.yml` | Publishes Mathlib, already built, as the release `mathlib-v4.35.0`, for the setup script to download. |
