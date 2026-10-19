@@ -1,0 +1,5 @@
+name = "subcompass"
+defaultTargets = ["Subcompass"]
+
+[[lean_lib]]
+name = "Subcompass"

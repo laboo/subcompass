@@ -1,0 +1,10 @@
+# On every push and pull request, set up Lean the same way a follower would
+# (scripts/setup-lean.sh) and check every model with `lake build`.
+name: Check models
+on: [push, pull_request]
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: scripts/setup-lean.sh
