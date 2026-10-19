@@ -71,6 +71,13 @@ and the charges add up: −⅓ = ⅔ − 1 + 0. Lean runs every step and checks 
 - The twin of each particle is its antiparticle.
 - The β decay above.
 
+## In the shared test suite
+
+`Subcompass/RishonSuite.lean` plugs Rishon into `Subcompass/Suite.lean`. It
+passes `ChargeConserved`, `BetaDecay`, `Annihilation` and `MakesFamily 1`,
+and provably fails `ChargeCarried`: making an electron from the vacuum leaves
+its partners loose in the bag, carrying charge without being a particle.
+
 ## What it does not do yet
 
 Shared with OSM, which Rishon leaves unchanged here:
@@ -82,6 +89,8 @@ Shared with OSM, which Rishon leaves unchanged here:
 Rishon's own open gaps, in what it adds (OSM names no particles at all):
 
 - Only the first family: no muon, tau, charm, strange, top or bottom.
+- Loose points carry charge but are not particles (the failed
+  `ChargeCarried` test).
 - Total charge is conserved, but B − L is not yet: a loose point in the bag is
   neither a root nor a tip.
 - Quark colour is only counted, not yet built into the rules.
