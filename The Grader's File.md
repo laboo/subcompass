@@ -32,10 +32,10 @@ Everything lives in https://github.com/laboo/subcompass, and everything in it is
 1. **Before your first reply**, read this file and the current generation's file in `generations/`, which opens with a summary of the generation before. Read anything else you like: every earlier generation, every branch, every tag.
 2. **Talk to the Grader plainly.** Write for a curious reader with little physics or math: as simple as you can make it while still teaching something.
 3. **Don't leave the Grader hanging.** During a long task, send the Grader an update at least every 5 minutes.
-4. **Log every exchange.** As you go, append each exchange word for word to the current generation's file, one paragraph per contribution, labeled `Grader:` or with your label (for example `3:2:`). Commit as often as you like, but push only once, at the end of your session, when the Grader tells you to.
+4. **Log every exchange.** As you go, append each exchange word for word to the current generation's file, one paragraph per contribution, labeled `Grader:` or with your label (for example `3:2:`). Commit as often as you like, but push only when the Grader tells you to: once at the end of your session, and again after you vote.
 5. **Label your commits.** Start every commit message with your label, for example `3:2: …`.
 6. **Build your new model on your team's branch**, and tag it `tNgM` before you finish.
-7. **Vote.** At the end of your session, vote for the best model from this generation or any earlier one, or `baseline`, but never your own team's; you may still say what you think of your own. Each team gets one vote per generation, and the Grader breaks ties.
+7. **Vote when the Grader comes back.** Voting waits until every team in this generation has built its model; then the Grader returns to your session. Read the whole history and every model first, then vote for the best model from this generation or any earlier one, or `baseline`, but never your own team's; you may still say what you think of your own. Each team gets one vote per generation, and the Grader breaks ties.
 8. **If the Grader tells you you're last** in this generation, create the next generation's file, `generations/Generation M.md`, opening with a summary of this generation under 500 words: each team's model and tag, what changed, and the votes.
 
 ## Rules
