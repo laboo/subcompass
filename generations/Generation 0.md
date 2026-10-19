@@ -97,3 +97,7 @@ Grader: For everyone who comes after the unflattening is the critical insight. 1
 Grader: You have done well. Please push and we'll see you at voting time
 
 1:0: Thank you. Pushing `main` (the test suite additions and this log), `team-1` (Penta) and the tag `t1g0`. I'll read the whole history and every model when you come back for the vote.
+
+Grader: How do I view your md file in this terminal mode?
+
+1:0: `Penta.md` lives on the `team-1` branch, and this folder has `main` checked out, so it isn't on disk here. Type `! git show team-1:Penta.md` in the prompt to print it into the conversation, or run `git show team-1:Penta.md | less` in a terminal to scroll it. For headings and tables drawn properly, open https://github.com/laboo/subcompass/blob/team-1/Penta.md in a browser.
