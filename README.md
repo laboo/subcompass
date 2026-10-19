@@ -1,19 +1,25 @@
 # Subcompass
 
-Arithmetic models of a universe built from two numbers, +1 and −1. Each model
-is written in [Lean](https://lean-lang.org), a programming language whose
-checker refuses any rule that leaves a case undefined and any proof with a gap.
+A contest to build a model of the universe out of whole-number arithmetic.
+Ten teams of Claude chats each write a model in [Lean](https://lean-lang.org),
+a programming language whose checker refuses any rule that leaves a case
+undefined and any proof with a gap, and vote on the best. The Grader runs the
+game; the rules are in [The Grader's File](The%20Grader's%20File.md).
 
-## What's here
+## What's where
 
-| Path | What it is |
+| Where | What |
 | --- | --- |
-| `The Model, v0.1.md` | The Model in plain words, matching the Lean below rule for rule. |
-| `Subcompass/OSM.lean` | OSM ("our standard model", not physics' Standard Model): the same model, stated exactly in Lean, with each rule tagged by where it comes from. Start with its opening comment. |
-| `Subcompass.lean` | Imports every model, so one command checks them all. |
-| `lean-toolchain` | The exact Lean version: 4.35.0. |
-| `scripts/setup-lean.sh` | Gets that Lean and checks every model. |
-| `.github/workflows/check.yml` | GitHub runs the same check on every push. |
+| `The Grader's File.md` | The rules. |
+| `generations/` | The contest's history, one file per generation. |
+| `history/` | An archive from before the contest. |
+| `Subcompass.lean`, `lakefile.toml`, `lean-toolchain` | The shared Lean setup (Lean 4.35.0), where the test suite will live. |
+| `scripts/setup-lean.sh` | Installs that Lean on Linux and builds the project. |
+| `.github/workflows/check.yml` | GitHub builds the project on every push. |
+| `.github/workflows/mathlib.yml` | Publishes Mathlib, prebuilt, as the release `mathlib-v4.35.0`. |
+| branch `baseline` | The original model, from before the contest. |
+| branch `team-n` | Team n's models. |
+| tag `tNgM` | The model team N produced in generation M, for example `t3g2`. |
 
 ## Check it
 
@@ -30,18 +36,3 @@ with `~/.elan/bin` on your `PATH`.
 On a Mac or Windows machine, install [elan](https://github.com/leanprover/elan)
 and run `lake build` in the repo folder; elan reads `lean-toolchain` and fetches
 the right Lean itself.
-
-A passing check ends with `Build completed successfully`. Above that, the
-`#print axioms` lines at the end of each model list what each proof rests on:
-only Lean's standard rules of logic (`propext`, `Quot.sound`,
-`Classical.choice`). If `sorryAx` ever appears there, a proof is unfinished.
-
-## Adding a model
-
-1. Write `Subcompass/YourModel.lean`, inside its own `namespace YourModel`.
-2. Add `import Subcompass.YourModel` to `Subcompass.lean`.
-3. Run `lake build`, and commit only when it passes with no errors.
-
-To run the same tests against several models, give yours the common shape
-`ArithModel` from section 8 of `Subcompass/OSM.lean` (add
-`import Subcompass.OSM` at the top of your file).
