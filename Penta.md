@@ -91,6 +91,11 @@ Passes `ChargeConserved`, `ChargeCarried`, `BaryonConserved`,
 `LeptonConserved`, `ProtonStable`, `BetaDecayAmong`, `Annihilation` and
 `MakesFamily 1`.
 
+It also passes the prediction tests, which read only the charges and hands
+Penta's own arithmetic gives, never the particle names: `TwinFlipsHand`,
+`VectorlikeCharge`, `OneFamilyCharges` (including a right-handed neutrino)
+and `ThirdsComeInThrees` (fractional charge only ever comes in threes).
+
 It provably fails `BetaDecay`, which asks for a world holding a lone down
 quark. Penta makes particles only with their antiparticles, so every world has
 baryon number 0, and a lone quark is impossible. `BetaDecayAmong` is the same

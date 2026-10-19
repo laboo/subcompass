@@ -13,6 +13,9 @@ Results (each a theorem below):
   antiparticles, so no world holds a lone down quark (`penta_not_BetaDecay`).
   `BetaDecayAmong` is the same decay with the quark's antiquark partner
   looking on;
+* passes the prediction tests, which read only Penta's own charges and
+  hands: `TwinFlipsHand`, `VectorlikeCharge`, `OneFamilyCharges` and
+  `ThirdsComeInThrees`;
 * `MakesFamily 2` and `MakesFamily 3` are unproved: Penta has only the first
   family.
 -/
@@ -107,5 +110,34 @@ theorem penta_MakesFamily1 : Suite.MakesFamily 1 suiteModel := by
 #print axioms penta_not_BetaDecay
 #print axioms penta_Annihilation
 #print axioms penta_MakesFamily1
+
+/-! ## Predictions: what Penta's arithmetic alone says -/
+
+/-- Penta's spectrum: all 32 four-simplices, with the charge (6 × charge is
+always even, so this is exact) and the hand (the value) its rules give. No
+particle names are used. -/
+abbrev spectrum : Suite.Spectrum where
+  Kind := Pent
+  kinds := Pent.all
+  charge3 t := t.charge6 / 2
+  left t := t.value == .neg
+  twin := Pent.twin
+
+theorem penta_TwinFlipsHand : Suite.TwinFlipsHand spectrum := by
+  unfold Suite.TwinFlipsHand; decide
+
+theorem penta_VectorlikeCharge : Suite.VectorlikeCharge spectrum := by
+  unfold Suite.VectorlikeCharge; decide
+
+theorem penta_OneFamilyCharges : Suite.OneFamilyCharges spectrum := by
+  unfold Suite.OneFamilyCharges; decide
+
+theorem penta_ThirdsComeInThrees : Suite.ThirdsComeInThrees spectrum := by
+  unfold Suite.ThirdsComeInThrees; decide
+
+#print axioms penta_TwinFlipsHand
+#print axioms penta_VectorlikeCharge
+#print axioms penta_OneFamilyCharges
+#print axioms penta_ThirdsComeInThrees
 
 end Penta
