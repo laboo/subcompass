@@ -322,4 +322,63 @@ theorem ProtonStable.of_baryonConserved {M : Model} (h : BaryonConserved M) :
     ProtonStable M :=
   fun _ ha => (Conserves.among h ha).symm.trans (by decide)
 
+/-! ## 6. Predictions (added by 1:0)
+
+`Model.particles` names particles, and a model can choose its names to fit
+the catalog, so tests built on names partly check what a team put in. The
+tests here never read names. A model fills in `Spectrum`: its elementary
+kinds, and for each the charge and the hand its own rules give, plus its twin.
+The tests then compare those numbers with nature.
+
+State a prediction here, on `main`, before proving it for any model; the
+git history then shows it came first. -/
+
+/-- What a model's own arithmetic says about its elementary kinds. -/
+structure Spectrum where
+  Kind : Type
+  /-- Every elementary kind, once each (each colour and each hand separately). -/
+  kinds : List Kind
+  /-- Electric charge, in thirds of e, as the model's rules compute it. -/
+  charge3 : Kind → Int
+  /-- Left-handed, as the model's rules decide it. -/
+  left : Kind → Bool
+  /-- The kind with every sign (or whatever the model flips) flipped. -/
+  twin : Kind → Kind
+
+/-- The antiparticle of a left-handed state is right-handed, and the other
+way round: in nature this follows from the CPT theorem. -/
+def TwinFlipsHand (S : Spectrum) : Prop :=
+  ∀ k ∈ S.kinds, S.left (S.twin k) = !S.left k
+
+/-- Electromagnetism can't tell left from right: the left-handed kinds carry
+exactly the same charges as the right-handed ones. -/
+def VectorlikeCharge (S : Spectrum) : Prop :=
+  ((S.kinds.filter S.left).map S.charge3).isPerm
+    ((S.kinds.filter (!S.left ·)).map S.charge3) = true
+
+/-- The charges of one family, every colour and both hands, counting a
+right-handed neutrino: electron and positron ±3, neutrino and antineutrino 0,
+two of each; up and anti-up ±2, down and anti-down ∓1, six of each (three
+colours, two hands). Without right-handed neutrinos there would be two fewer
+0s; neutrino masses suggest they exist, but none has been seen. -/
+def familyCharges : List Int :=
+  List.replicate 2 (-3) ++ List.replicate 2 3 ++ List.replicate 4 0 ++
+  List.replicate 6 2 ++ List.replicate 6 (-2) ++ List.replicate 6 (-1) ++ List.replicate 6 1
+
+/-- The model's kinds carry exactly one family's charges, right-handed
+neutrino included. -/
+def OneFamilyCharges (S : Spectrum) : Prop :=
+  (S.kinds.map S.charge3).isPerm familyCharges = true
+
+/-- Fractional charge comes only with colour: every kind whose charge is not
+a whole number of e comes in a multiple of three kinds with that charge and
+hand. In the Standard Model these two facts (thirds of e, three colours) are
+unrelated inputs; a model that ties them together explains one by the other. -/
+def ThirdsComeInThrees (S : Spectrum) : Prop :=
+  ∀ k ∈ S.kinds, S.charge3 k % 3 ≠ 0 →
+    (S.kinds.countP fun j => S.charge3 j == S.charge3 k && S.left j == S.left k) % 3 = 0
+
+/-- Nature's family passes its own tests. -/
+example : familyCharges.length = 32 ∧ (familyCharges.map (· ^ 3)).sum = 0 := by decide
+
 end Suite
