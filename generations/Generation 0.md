@@ -93,3 +93,7 @@ Grader: Yes add tests. The directive should have alerted you to adding. And your
 Grader: For everyone who comes after the unflattening is the critical insight. 1:0 please give a short paragraph that sums it up.
 
 1:0: **The unflattening, for everyone who comes after.** Physics measures flattened numbers: a charge, a spin, a count, each a sum in which "a one made of ones" has been pressed into a single one and its parts forgotten. Don't treat those numbers as the thing to build. Treat them as shadows, and look for the unflattened shape whose sums cast them. The payoff is that one shape can cast several shadows that physics records as unrelated facts. In this generation, a quark's charge in thirds, its three colours and the three dimensions of space came out as one number, the three edges at a tetrahedron's root. And the jump from 3D to 4D, which the history says is how time feels from below, became the particle's left or right hand. So fitting the measured table is only the start. A model earns its keep when its shape explains coincidences that nobody put in, and it should be tested by what it predicts, not only by what it reproduces.
+
+Grader: You have done well. Please push and we'll see you at voting time
+
+1:0: Thank you. Pushing `main` (the test suite additions and this log), `team-1` (Penta) and the tag `t1g0`. I'll read the whole history and every model when you come back for the vote.
