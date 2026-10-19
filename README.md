@@ -8,6 +8,7 @@ checker refuses any rule that leaves a case undefined and any proof with a gap.
 
 | Path | What it is |
 | --- | --- |
+| `The Model, v0.1.md` | The Model in plain words, matching the Lean below rule for rule. |
 | `Subcompass/OSM.lean` | OSM, our standard model: The Model, with every gap filled and tagged. Start with its opening comment. |
 | `Subcompass.lean` | Imports every model, so one command checks them all. |
 | `lean-toolchain` | The exact Lean version: 4.35.0. |
