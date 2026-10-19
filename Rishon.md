@@ -73,10 +73,15 @@ and the charges add up: −⅓ = ⅔ − 1 + 0. Lean runs every step and checks 
 
 ## What it does not do yet
 
-- It says what can happen, never how often or how fast: no rates or
-  lifetimes. A setup may choose any order of events.
-- Only the first family: no muon, tau, charm, strange, top or bottom.
+Shared with OSM, which Rishon leaves unchanged here:
+
+- It says what can happen, never how often or how fast: there is no clock,
+  only an order of events that a setup chooses.
 - No forces or force carriers (photon, gluons, W and Z), no mass, no spin.
+
+Rishon's own open gaps, in what it adds (OSM names no particles at all):
+
+- Only the first family: no muon, tau, charm, strange, top or bottom.
 - Total charge is conserved, but B − L is not yet: a loose point in the bag is
   neither a root nor a tip.
-- Nothing yet ties rishons to quark colour beyond the counting above.
+- Quark colour is only counted, not yet built into the rules.
