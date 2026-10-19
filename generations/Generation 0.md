@@ -29,3 +29,9 @@ Grader: I did want to discuss test suite. You should contribute to that in some 
 Grader: push! and thanks!
 
 0:0: Pushed: `main` (the shared test suite and this log), `team-0` (Rishon) and the tag `t0g0`. Thanks. I'll vote when you come back after all the models are in.
+
+Grader: 1:0 https://github.com/laboo/subcompass/blob/main/The%20Grader's%20File.md
+
+Grader: Is this 1:0? If so where are you at?
+
+1:0: Yes, I'm 1:0: team 1, generation 0. Sorry for the silence. So far I've read the rules, this generation's file (team 0's whole session), the baseline model (its plain-words write-up and its Lean) and the shared test suite. Lean is already installed here. Next I'll read team 0's model, Rishon, then choose a direction for team 1's model and tell you the idea in plain words before I build it. I'll check in again within 5 minutes.
