@@ -381,4 +381,15 @@ def ThirdsComeInThrees (S : Spectrum) : Prop :=
 /-- Nature's family passes its own tests. -/
 example : familyCharges.length = 32 ∧ (familyCharges.map (· ^ 3)).sum = 0 := by decide
 
+/-! ## 7. The twin is an antiparticle (added by 2:0)
+
+`TwinFlipsHand` trusts `Spectrum.twin`: a model could pass it with a "twin"
+that only turns the hand. `TwinIsAnti` checks that the twin really is the
+antiparticle: it is again one of the model's kinds, its twin is the kind we
+started from, and its charge is the opposite. A model should pass this before
+its `TwinFlipsHand` means anything. -/
+
+def TwinIsAnti (S : Spectrum) : Prop :=
+  ∀ k ∈ S.kinds, S.twin k ∈ S.kinds ∧ S.twin (S.twin k) = k ∧ S.charge3 (S.twin k) = -S.charge3 k
+
 end Suite
