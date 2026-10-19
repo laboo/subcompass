@@ -3,3 +3,11 @@ defaultTargets = ["Subcompass"]
 
 [[lean_lib]]
 name = "Subcompass"
+
+# Mathlib, by git URL (not by Reservoir scope), so nothing needs Reservoir's
+# servers. scripts/setup-lean.sh supplies it already built; keep `rev` in step
+# with MATHLIB_TAG there and with mathlib.yml.
+[[require]]
+name = "mathlib"
+git = "https://github.com/leanprover-community/mathlib4"
+rev = "v4.35.0"

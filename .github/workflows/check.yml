@@ -1,10 +1,16 @@
-# On every push and pull request, set up Lean the same way a follower would
-# (scripts/setup-lean.sh) and check every model with `lake build`.
+# On every push and pull request, set up Lean and Mathlib the same way a
+# contestant would (scripts/setup-lean.sh) and build everything with
+# `lake build`.
 name: Check models
 on: [push, pull_request]
 jobs:
   check:
     runs-on: ubuntu-latest
     steps:
+      - name: Free disk space
+        # Lean and the unpacked Mathlib need about 12 GB.
+        run: |
+          sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /opt/hostedtoolcache/CodeQL
+          df -h /
       - uses: actions/checkout@v4
       - run: scripts/setup-lean.sh
