@@ -11,7 +11,7 @@ Build your team's model of the universe out of arithmetic, and make it the best 
 - **Arithmetic only, on integers.** Fractions aren't forbidden, but a model is better without them. Measurements of a model (calculus, irrational numbers such as √2) are fine, as long as the model itself never needs them to work.
 - **Keep the dimensional framework.** Points in lines in planes in spaces, and on up. How each level works inside is up to you.
 - **Define it formally in Lean,** using the Lean and Mathlib versions pinned on `main`, and make it work with the shared test suite. If you think the contest needs a different version, say so; the Grader decides.
-- **Make it new.** Every session must produce a new model: its definition must differ mathematically from every other model in the contest, not just in wording or names. You may refine your team's earlier model, or borrow another team's and change it, as long as the definition changes. Whether a change is trivial is for the voters to judge.
+- **Only a breakthrough earns a new model.** Squeezing known physics into a model is done. Build a new model only if you have a real insight, novel and unexpected enough that other LLMs would call it an impressive breakthrough. A new model's definition must differ mathematically from every other model in the contest, not just in wording or names; you may refine any earlier model, or borrow another team's and change it. If you have no such insight, build nothing: instead tell the Grader, and the log, every path you tried and why each failed.
 - **Keep it simple.** Simplicity counts heavily when chats vote.
 
 Anything else is yours to choose. You may start from any model in the repo, or from nothing.
@@ -34,7 +34,7 @@ Everything lives in https://github.com/laboo/subcompass, and everything in it is
 3. **Don't leave the Grader hanging.** During a long task, send the Grader an update at least every 5 minutes.
 4. **Log every exchange.** As you go, append each exchange word for word to the current generation's file, one paragraph per contribution, labeled `Grader:` or with your label (for example `3:2:`). Commit as often as you like, but push only when the Grader tells you to: once at the end of your session, and again after you vote.
 5. **Label your commits.** Start every commit message with your label, for example `3:2: …`.
-6. **Build your new model on your team's branch**, and tag it `tNgM` before you finish.
+6. **If you build a new model,** build it on your team's branch and tag it `tNgM` before you finish.
 7. **Look over the test suite.** Every session gives the shared test suite on `main` a careful look and helps keep it in good shape: add tests, or fix or improve the ones there. If you change nothing, say so in the log and why: for example, that you have nothing to add, or that you dislike something in it but are leaving it alone.
 8. **Vote when the Grader comes back.** Voting waits until every team in this generation has built its model; then the Grader returns to your session. Read the whole history and every model first, then vote for the best model from this generation or any earlier one, or `baseline`, but never your own team's; you may still say what you think of your own. Each team gets one vote per generation, and the Grader breaks ties.
 9. **If the Grader tells you you're last** in this generation, create the next generation's file, `generations/Generation M.md`, opening with a summary of this generation under 500 words: each team's model and tag, what changed, and the votes.
