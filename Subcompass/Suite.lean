@@ -421,4 +421,105 @@ def BetaDecayViaW (M : Model) : Prop :=
 example : (boson .wMinus).charge3 =
     (matter .electron).charge3 + (anti .nuE).charge3 := by decide
 
+/-! ## 9. Space and time (added by 4:0)
+
+The tests above treat a world as a bag with no space in it, and an event as
+something that happens to the whole world at once. A model with space says
+where things are, and which cells each event *locks*: the cells it may read
+and change. There is no global clock. A tick is one event: it locks its
+cells, does its work there, and lets them go, so two ticks on different cells
+need not be ordered at all.
+
+A model with space fills in `Spacetime`: everything in `Model`, plus what each
+cell of a line holds (in the model's own terms, and everything in it), and
+the cells each event locks. Three tests ask that ticks be local, read only
+what they lock, and lock only neighbouring cells. `SpeedLimit` then follows
+for any model, by `SpeedLimit.of`: what a cell holds after n ticks depends only
+on what was within n cells of it, so nothing travels faster than one cell per
+tick. `NoGlobalNow` asks that ticks on separate cells can happen in either
+order with the same outcome, so the order in which locks are granted never
+shows. -/
+
+/-- A model whose worlds are spread over a line of cells. -/
+structure Spacetime extends Model where
+  /-- What the model keeps in its cells, in its own terms. -/
+  Stuff : Type
+  /-- Everything cell `j` of a world holds, in any order. -/
+  cell : World → Int → List Stuff
+  /-- The cells an event locks: the only cells it may read or change. -/
+  locks : Event → List Int
+
+/-- A tick changes nothing outside the cells it locks. -/
+def Local (S : Spacetime) : Prop :=
+  ∀ w e w', S.step w e = some w' → ∀ j, j ∉ S.locks e → (S.cell w' j).Perm (S.cell w j)
+
+/-- A tick reads nothing outside the cells it locks: in two worlds that agree
+on those cells, it can happen in both or in neither, and leaves them agreeing
+there. -/
+def ReadsLocks (S : Spacetime) : Prop :=
+  ∀ w₁ w₂ e, (∀ j ∈ S.locks e, (S.cell w₁ j).Perm (S.cell w₂ j)) →
+    (S.step w₁ e).isSome = (S.step w₂ e).isSome ∧
+    ∀ w₁' w₂', S.step w₁ e = some w₁' → S.step w₂ e = some w₂' →
+      ∀ j ∈ S.locks e, (S.cell w₁' j).Perm (S.cell w₂' j)
+
+/-- A tick locks only neighbouring cells: any two it locks are at most one
+apart. -/
+def Near (S : Spacetime) : Prop :=
+  ∀ e, ∀ i ∈ S.locks e, ∀ j ∈ S.locks e, i - j ≤ 1 ∧ j - i ≤ 1
+
+/-- The speed limit: if two worlds agree on the cells from `a` to `b`, then
+after the same n ticks they agree on the cells from `a + n` to `b − n`. What a
+cell holds after n ticks depends only on what was within n cells of it. -/
+def SpeedLimit (S : Spacetime) : Prop :=
+  ∀ (es : List S.Event) (w₁ w₂ w₁' w₂' : S.World) (a b : Int),
+    (∀ j, a ≤ j → j ≤ b → (S.cell w₁ j).Perm (S.cell w₂ j)) →
+    S.run w₁ es = some w₁' → S.run w₂ es = some w₂' →
+    ∀ j, a + es.length ≤ j → j + es.length ≤ b → (S.cell w₁' j).Perm (S.cell w₂' j)
+
+/-- No global now: two ticks that lock no cell in common can happen in either
+order, with the same outcome in every cell. -/
+def NoGlobalNow (S : Spacetime) : Prop :=
+  ∀ w e f w₁ w₂, (∀ j ∈ S.locks e, j ∉ S.locks f) →
+    S.step w e = some w₁ → S.step w₁ f = some w₂ →
+    ∃ w₃ w₄, S.step w f = some w₃ ∧ S.step w₃ e = some w₄ ∧
+      ∀ j, (S.cell w₄ j).Perm (S.cell w₂ j)
+
+/-- One tick shrinks the stretch where two worlds agree by at most a cell at
+each end. -/
+theorem SpeedLimit.tick {S : Spacetime} (hL : Local S) (hR : ReadsLocks S) (hN : Near S)
+    {w₁ w₂ w₁' w₂' : S.World} {e : S.Event} {a b : Int}
+    (hab : ∀ j, a ≤ j → j ≤ b → (S.cell w₁ j).Perm (S.cell w₂ j))
+    (h₁ : S.step w₁ e = some w₁') (h₂ : S.step w₂ e = some w₂') :
+    ∀ j, a + 1 ≤ j → j + 1 ≤ b → (S.cell w₁' j).Perm (S.cell w₂' j) := by
+  intro j hj₁ hj₂
+  by_cases hj : j ∈ S.locks e
+  · refine (hR w₁ w₂ e (fun i hi => hab i ?_ ?_)).2 w₁' w₂' h₁ h₂ j hj
+    · have := hN e i hi j hj; omega
+    · have := hN e i hi j hj; omega
+  · exact (hL w₁ e w₁' h₁ j hj).trans
+      ((hab j (by omega) (by omega)).trans (hL w₂ e w₂' h₂ j hj).symm)
+
+/-- A model whose ticks are local, read only what they lock, and lock only
+neighbouring cells, has the speed limit. -/
+theorem SpeedLimit.of {S : Spacetime} (hL : Local S) (hR : ReadsLocks S) (hN : Near S) :
+    SpeedLimit S := by
+  intro es
+  induction es with
+  | nil =>
+    intro w₁ w₂ w₁' w₂' a b hab h₁ h₂ j hj₁ hj₂
+    simp only [Model.run, Option.some.injEq] at h₁ h₂
+    subst h₁ h₂
+    exact hab j (by simpa using hj₁) (by simpa using hj₂)
+  | cons e es ih =>
+    intro w₁ w₂ w₁' w₂' a b hab h₁ h₂ j hj₁ hj₂
+    simp only [Model.run] at h₁ h₂
+    split at h₁
+    · cases h₁
+    split at h₂
+    · cases h₂
+    rename_i v₁ hv₁ _ v₂ hv₂
+    simp only [List.length_cons] at hj₁ hj₂
+    exact ih v₁ v₂ w₁' w₂' (a + 1) (b - 1) (fun i hi₁ hi₂ => SpeedLimit.tick hL hR hN hab hv₁ hv₂ i hi₁ (by omega)) h₁ h₂ j
+      (by omega) (by omega)
+
 end Suite
