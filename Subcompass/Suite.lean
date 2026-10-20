@@ -392,4 +392,33 @@ its `TwinFlipsHand` means anything. -/
 def TwinIsAnti (S : Spectrum) : Prop :=
   ∀ k ∈ S.kinds, S.twin k ∈ S.kinds ∧ S.twin (S.twin k) = k ∧ S.charge3 (S.twin k) = -S.charge3 k
 
+/-! ## 8. Force carriers as things (added by 3:0)
+
+The tests above can be passed by a model whose forces are only rules: in
+`Annihilation` the pair may vanish into nothing, and in `BetaDecayAmong` the W
+need never appear. In nature the force carriers are particles: they are made,
+they travel, and they decay. These tests ask for that. -/
+
+/-- An electron and a positron annihilate into two photons, as they do in
+nature (a single photon can't carry off their momentum). -/
+def AnnihilatesToLight (M : Model) : Prop :=
+  Allows M [matter .electron, anti .electron] [boson .photon, boson .photon]
+
+/-- A force carrier (or the Higgs) can be made from the vacuum together with
+its antiparticle; for the photon, gluon, Z and Higgs that is another of the
+same kind. -/
+def MakesBoson (b : Boson) (M : Model) : Prop :=
+  Allows M [] [boson b, (boson b).antiOf]
+
+/-- β decay in two steps, with a real W in between, as in its Feynman
+diagram: a down quark becomes an up quark and a W⁻, and the W⁻ becomes an
+electron and an antineutrino. -/
+def BetaDecayViaW (M : Model) : Prop :=
+  AllowsAmong M [matter .down] [matter .up, boson .wMinus] ∧
+  AllowsAmong M [boson .wMinus] [matter .electron, anti .nuE]
+
+/-- The W⁻ carries exactly the charge it hands on. -/
+example : (boson .wMinus).charge3 =
+    (matter .electron).charge3 + (anti .nuE).charge3 := by decide
+
 end Suite
