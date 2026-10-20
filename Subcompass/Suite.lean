@@ -522,4 +522,105 @@ theorem SpeedLimit.of {S : Spacetime} (hL : Local S) (hR : ReadsLocks S) (hN : N
     exact ih v₁ v₂ w₁' w₂' (a + 1) (b - 1) (fun i hi₁ hi₂ => SpeedLimit.tick hL hR hN hab hv₁ hv₂ i hi₁ (by omega)) h₁ h₂ j
       (by omega) (by omega)
 
+/-! ## 10. Space in any dimension (added by 5:0)
+
+Section 9's space is a line of numbered cells. A model whose space is a plane,
+a solid, or something with no grid at all (simplices glued face to face, say)
+fills in `Space` instead: its own kind of *place*, what each place holds, the
+places each event locks, and a *distance* between places, in whole steps,
+that obeys the triangle law. The tests are section 9's, with "neighbouring"
+meaning "at most one step apart". `SpeedLimitIn` follows for any such model
+(`SpeedLimitIn.of`): what a place holds after n ticks depends only on what was
+within n steps of it. A line of cells is the case where a place is a number
+and the distance is the difference (`Spacetime.toSpace`). -/
+
+/-- A model whose worlds are spread over places of any kind. -/
+structure Space extends Model where
+  /-- The model's places. -/
+  Place : Type
+  /-- What the model keeps at its places, in its own terms. -/
+  Stuff : Type
+  /-- Everything place `p` of a world holds, in any order. -/
+  cell : World → Place → List Stuff
+  /-- The places an event locks: the only places it may read or change. -/
+  locks : Event → List Place
+  /-- How many steps apart two places are. -/
+  dist : Place → Place → Nat
+  dist_tri : ∀ a b c, dist a c ≤ dist a b + dist b c
+
+/-- A line of cells is a space: the distance between cells is their difference. -/
+def Spacetime.toSpace (S : Spacetime) : Space :=
+  { S.toModel with
+    Place := Int, Stuff := S.Stuff, cell := S.cell, locks := S.locks
+    dist := fun i j => (i - j).natAbs
+    dist_tri := fun a b c => by omega }
+
+/-- A tick changes nothing outside the places it locks. -/
+def LocalIn (S : Space) : Prop :=
+  ∀ w e w', S.step w e = some w' → ∀ p, p ∉ S.locks e → (S.cell w' p).Perm (S.cell w p)
+
+/-- A tick reads nothing outside the places it locks. -/
+def ReadsLocksIn (S : Space) : Prop :=
+  ∀ w₁ w₂ e, (∀ p ∈ S.locks e, (S.cell w₁ p).Perm (S.cell w₂ p)) →
+    (S.step w₁ e).isSome = (S.step w₂ e).isSome ∧
+    ∀ w₁' w₂', S.step w₁ e = some w₁' → S.step w₂ e = some w₂' →
+      ∀ p ∈ S.locks e, (S.cell w₁' p).Perm (S.cell w₂' p)
+
+/-- A tick locks only neighbouring places: any two it locks are at most one
+step apart. -/
+def NearIn (S : Space) : Prop :=
+  ∀ e, ∀ p ∈ S.locks e, ∀ q ∈ S.locks e, S.dist p q ≤ 1
+
+/-- No global now: two ticks that lock no place in common can happen in
+either order, with the same outcome at every place. -/
+def NoGlobalNowIn (S : Space) : Prop :=
+  ∀ w e f w₁ w₂, (∀ p ∈ S.locks e, p ∉ S.locks f) →
+    S.step w e = some w₁ → S.step w₁ f = some w₂ →
+    ∃ w₃ w₄, S.step w f = some w₃ ∧ S.step w₃ e = some w₄ ∧
+      ∀ p, (S.cell w₄ p).Perm (S.cell w₂ p)
+
+/-- The speed limit: if two worlds agree on every place within `r` steps of
+`o`, then after the same n ticks they agree on every place within `r − n`
+steps of `o`. -/
+def SpeedLimitIn (S : Space) : Prop :=
+  ∀ (es : List S.Event) (w₁ w₂ w₁' w₂' : S.World) (o : S.Place) (r : Nat),
+    (∀ p, S.dist o p ≤ r → (S.cell w₁ p).Perm (S.cell w₂ p)) →
+    S.run w₁ es = some w₁' → S.run w₂ es = some w₂' →
+    ∀ p, S.dist o p + es.length ≤ r → (S.cell w₁' p).Perm (S.cell w₂' p)
+
+/-- One tick shrinks the ball where two worlds agree by at most one step. -/
+theorem SpeedLimitIn.tick {S : Space} (hL : LocalIn S) (hR : ReadsLocksIn S) (hN : NearIn S)
+    {w₁ w₂ w₁' w₂' : S.World} {e : S.Event} {o : S.Place} {r : Nat}
+    (hag : ∀ p, S.dist o p ≤ r → (S.cell w₁ p).Perm (S.cell w₂ p))
+    (h₁ : S.step w₁ e = some w₁') (h₂ : S.step w₂ e = some w₂') :
+    ∀ p, S.dist o p + 1 ≤ r → (S.cell w₁' p).Perm (S.cell w₂' p) := by
+  intro p hp
+  by_cases hl : p ∈ S.locks e
+  · refine (hR w₁ w₂ e (fun q hq => hag q ?_)).2 w₁' w₂' h₁ h₂ p hl
+    have := S.dist_tri o p q; have := hN e p hl q hq; omega
+  · exact (hL w₁ e w₁' h₁ p hl).trans ((hag p (by omega)).trans (hL w₂ e w₂' h₂ p hl).symm)
+
+/-- A model whose ticks are local, read only what they lock, and lock only
+neighbouring places, has the speed limit. -/
+theorem SpeedLimitIn.of {S : Space} (hL : LocalIn S) (hR : ReadsLocksIn S) (hN : NearIn S) :
+    SpeedLimitIn S := by
+  intro es
+  induction es with
+  | nil =>
+    intro w₁ w₂ w₁' w₂' o r hag h₁ h₂ p hp
+    simp only [Model.run, Option.some.injEq] at h₁ h₂
+    subst h₁ h₂
+    exact hag p (by simpa using hp)
+  | cons e es ih =>
+    intro w₁ w₂ w₁' w₂' o r hag h₁ h₂ p hp
+    simp only [Model.run] at h₁ h₂
+    split at h₁
+    · cases h₁
+    split at h₂
+    · cases h₂
+    rename_i v₁ hv₁ _ v₂ hv₂
+    simp only [List.length_cons] at hp
+    exact ih v₁ v₂ w₁' w₂' o (r - 1)
+      (fun q hq => SpeedLimitIn.tick hL hR hN hag hv₁ hv₂ q (by omega)) h₁ h₂ p (by omega)
+
 end Suite
